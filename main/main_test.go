@@ -18,6 +18,7 @@ func TestMakeCell(t *testing.T) {
 
 func TestHaveBoard(t *testing.T) {
 	board := main.MakeBoard(seed)
+
 	assert.NotNil(t, board)
 	assert.Equal(t, len(seed), len(board))
 	for i := 0; i < len(board); i++ {
@@ -28,9 +29,9 @@ func TestHaveBoard(t *testing.T) {
 func TestBoardSeed(t *testing.T) {
 	board := main.MakeBoard(seed)
 
-	assert.True(t, bool(board[0][1]))
-	assert.True(t, bool(board[1][2]))
-	assert.True(t, bool(board[2][0]))
+	assert.True(t, bool(board.Get(0, 1)))
+	assert.True(t, bool(board.Get(1, 2)))
+	assert.True(t, bool(board.Get(2, 0)))
 }
 
 func TestNext(t *testing.T) {
@@ -50,20 +51,23 @@ func defaultBoard() (board main.Board) {
 
 func TestShouldDieWhenLessThan2(t *testing.T) {
 	seed := [][]int{
-		[]int{0, 0, 0},
+		[]int{1, 0, 0},
 		[]int{0, 1, 1},
 		[]int{1, 1, 0},
 	}
 
 	board := main.MakeBoard(seed)
 	assert.True(t, board.ShouldDie(0, 0))
-	seed = [][]int{
+}
+
+func TestShouldNotDieWhenAliveAnd2LiveNeighbors(t *testing.T) {
+	seed := [][]int{
+		[]int{1, 1, 0},
 		[]int{0, 1, 0},
-		[]int{0, 1, 1},
 		[]int{1, 1, 0},
 	}
 
-	board = main.MakeBoard(seed)
+	board := main.MakeBoard(seed)
 	assert.False(t, board.ShouldDie(0, 0))
 }
 
@@ -88,4 +92,30 @@ func TestShouldLiveWhenLiveAnd2Or3(t *testing.T) {
 	board := main.MakeBoard(seed)
 	assert.False(t, board.ShouldDie(0, 0))
 	assert.False(t, board.ShouldDie(1, 2))
+}
+
+func TestShouldComeAliveWhenDeadWith3AliveNeighbors(t *testing.T) {
+	seed := [][]int{
+		[]int{1, 1, 0},
+		[]int{0, 0, 1},
+		[]int{0, 0, 0},
+	}
+
+	board := main.MakeBoard(seed)
+	assert.False(t, board.ShouldDie(1, 1))
+}
+
+func TestSpaceIsExpandable(t *testing.T) {
+	board := main.MakeBoard([][]int{
+		[]int{
+			1,
+		},
+	})
+
+	assert.True(t, board.ShouldDie(0, 0))
+
+	board.MakeAlive(100, 100) = main.Cell(true)
+
+	assert.True(t, board.ShouldDie(0, 0))
+	assert.True(t, board.ShouldDie(100, 100))
 }
