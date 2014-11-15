@@ -1,8 +1,11 @@
 package main_test
 
-import "testing"
-import "github.com/stretchr/testify/assert"
-import "github.com/elkorn/code_retreat-game_of_life/main"
+import (
+	"testing"
+
+	"github.com/elkorn/code_retreat-game_of_life/main"
+	"github.com/stretchr/testify/assert"
+)
 
 var seed [][]int = [][]int{
 	[]int{0, 1, 0},
@@ -36,7 +39,7 @@ func TestBoardSeed(t *testing.T) {
 
 func TestNext(t *testing.T) {
 	board1 := main.MakeBoard(seed)
-	next := main.Next(board1)
+	next := board1.Next()
 	assert.NotNil(t, next)
 	assert.Equal(t, board1.Size(), next.Size())
 	for i := 0; i < next.Size(); i++ {
@@ -134,4 +137,11 @@ func TestNeighborhoodsInExpandedSpaceAreCohesive(t *testing.T) {
 	board.MakeAlive(101, 100)
 
 	assert.False(t, board.ShouldDie(100, 100))
+}
+
+func TestNextIterationProgressesPopulation(t *testing.T) {
+	board := defaultBoard()
+	next := board.Next()
+
+	assert.False(t, next.Get(1, 1))
 }

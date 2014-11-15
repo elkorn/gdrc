@@ -33,32 +33,27 @@ func (self Board) MakeAlive(x, y int) {
 	}
 }
 
-func Next(input Board) (result Board) {
+func (input Board) Next() (result Board) {
 	result = Board{
 		leBoard: make(map[int]map[int]bool),
 	}
 
-	for i := 0; i < len(input.leBoard); i++ {
-		result.leBoard[i] = input.leBoard[i]
+	for i := range input.leBoard {
+		result.leBoard[i] = make(map[int]bool)
+		for j := range input.leBoard[i] {
+			result.leBoard[i][j] = !input.ShouldDie(i, j)
+		}
 	}
 
-	return input
+	return result
 }
 
 func (self Board) countAliveNeighbors(x, y int) int {
 	alive := 0
 	for xi := -1; xi <= 1; xi++ {
 		theX := x + xi
-		// if theX < 0 || theX >= len(self.leBoard[theX]) {
-		// 	continue
-		// }
-
 		for yi := -1; yi <= 1; yi++ {
 			theY := y + yi
-			// if theY < 0 || theY >= len(self.leBoard[theX]) {
-			// 	continue
-			// }
-
 			if yi == 0 && xi == 0 {
 				continue
 			}
