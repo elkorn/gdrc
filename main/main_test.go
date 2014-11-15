@@ -10,19 +10,19 @@ var seed [][]int = [][]int{
 	[]int{1, 1, 0},
 }
 
-func TestMakeCell(t *testing.T) {
-	c := main.Cell(true)
+func TestMakebool(t *testing.T) {
+	c := true
 
-	assert.True(t, bool(c))
+	assert.True(t, c)
 }
 
 func TestHaveBoard(t *testing.T) {
 	board := main.MakeBoard(seed)
 
 	assert.NotNil(t, board)
-	assert.Equal(t, len(seed), len(board))
-	for i := 0; i < len(board); i++ {
-		assert.Equal(t, len(seed[i]), len(board[i]))
+	assert.Equal(t, len(seed), board.Size())
+	for i := 0; i < board.Size(); i++ {
+		assert.Equal(t, len(seed[i]), board.RowSize(i))
 	}
 }
 
@@ -38,9 +38,9 @@ func TestNext(t *testing.T) {
 	board1 := main.MakeBoard(seed)
 	next := main.Next(board1)
 	assert.NotNil(t, next)
-	assert.Equal(t, len(board1), len(next))
-	for i := 0; i < len(next); i++ {
-		assert.Equal(t, len(board1[i]), len(next[i]))
+	assert.Equal(t, board1.Size(), next.Size())
+	for i := 0; i < next.Size(); i++ {
+		assert.Equal(t, board1.RowSize(i), next.RowSize(i))
 	}
 }
 
@@ -114,8 +114,24 @@ func TestSpaceIsExpandable(t *testing.T) {
 
 	assert.True(t, board.ShouldDie(0, 0))
 
-	board.MakeAlive(100, 100) = main.Cell(true)
+	board.MakeAlive(100, 100)
 
 	assert.True(t, board.ShouldDie(0, 0))
 	assert.True(t, board.ShouldDie(100, 100))
+}
+
+func TestNeighborhoodsInExpandedSpaceAreCohesive(t *testing.T) {
+	board := main.MakeBoard([][]int{
+		[]int{
+			1,
+		},
+	})
+
+	assert.True(t, board.ShouldDie(0, 0))
+
+	board.MakeAlive(100, 100)
+	board.MakeAlive(99, 100)
+	board.MakeAlive(101, 100)
+
+	assert.False(t, board.ShouldDie(100, 100))
 }
